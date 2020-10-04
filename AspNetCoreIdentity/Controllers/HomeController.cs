@@ -37,6 +37,19 @@ namespace AspNetCoreIdentity.Controllers
         {
             return View();
         }
+
+        [Authorize(Policy = "PodeExcluir")]
+        public IActionResult SecretClaim()
+        {
+            return View("Secret");
+        }
+
+        [Authorize(Policy = "PodeEscrever")]
+        public IActionResult SecretClaimGravar()
+        {
+            return View("Secret");
+        }
+
         public IActionResult Privacy()
         {
             return View();
