@@ -32,7 +32,11 @@ namespace AspNetCoreIdentity.Controllers
             return View();
         }
 
- 
+        [Authorize(Roles = "Admin")]
+        public IActionResult Secret()
+        {
+            return View();
+        }
         public IActionResult Privacy()
         {
             return View();
