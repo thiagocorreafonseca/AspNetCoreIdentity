@@ -7,20 +7,30 @@ using Microsoft.AspNetCore.Mvc;
 using AspNetCoreIdentity.Models;
 using Microsoft.AspNetCore.Authorization;
 using AspNetCoreIdentity.Extensions;
+using KissLog;
 
 namespace AspNetCoreIdentity.Controllers
 {
     [Authorize]
     public class HomeController : Controller
     {
+        private ILogger _logger { get; set; }
+
+        public HomeController(ILogger logger)
+        {
+            _logger = logger;
+        }
+
         public IActionResult Index()
         {
+            _logger.Trace("teste 23423423");
             return View();
         }
 
         [AllowAnonymous]
         public IActionResult About()
         {
+            throw new Exception("Errooooo");
             ViewData["Message"] = "Your application description page.";
 
             return View();

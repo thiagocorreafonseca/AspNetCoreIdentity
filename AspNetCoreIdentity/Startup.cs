@@ -5,6 +5,15 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using AspNetCoreIdentity.Config;
 using Microsoft.Extensions.Hosting;
+using System.Diagnostics;
+using System;
+using System.Text;
+using Microsoft.AspNetCore.Http;
+using KissLog;
+using KissLog.AspNetCore;
+using KissLog.CloudListeners.Auth;
+using KissLog.CloudListeners.RequestLogsListener;
+
 
 namespace AspNetCoreIdentity
 {
@@ -34,6 +43,12 @@ namespace AspNetCoreIdentity
             services.AddAuthorizationConfig();
             services.ResolveDependencies();
 
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddScoped<ILogger>((context) =>
+            {
+                return Logger.Factory.Get();
+            });
+
             services.AddMvc(options => options.EnableEndpointRouting = false);
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
         }
@@ -54,14 +69,56 @@ namespace AspNetCoreIdentity
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
-
             app.UseAuthentication();
+
+            app.UseKissLogMiddleware(options => {
+                ConfigureKissLog(options);
+            });
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+            
         }
+        
+        private void ConfigureKissLog(IOptionsBuilder options)
+        {
+            options.Options
+                .AppendExceptionDetails((Exception ex) =>
+                {
+                    StringBuilder sb = new StringBuilder();
+
+                    if (ex is System.NullReferenceException nullRefException)
+                    {
+                        sb.AppendLine("Important: check for null references");
+                    }
+
+                    return sb.ToString();
+                });
+
+            options.InternalLog = (message) =>
+            {
+                Debug.WriteLine(message);
+            };
+
+            RegisterKissLogListeners(options);
+        }
+        private void RegisterKissLogListeners(IOptionsBuilder options)
+        {
+            // multiple listeners can be registered using options.Listeners.Add() method
+
+            // add KissLog.net cloud listener
+            options.Listeners.Add(new RequestLogsApiListener(new Application(
+                Configuration["KissLog.OrganizationId"],
+                Configuration["KissLog.ApplicationId"])
+            )
+            {
+                ApiUrl = Configuration["KissLog.ApiUrl"]
+            });
+        }
+
     }
 }
