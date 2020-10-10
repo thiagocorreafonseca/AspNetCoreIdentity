@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <StartupObject>AspNetCoreIdentity.Program</StartupObject>
+    <UserSecretsId>a6cef7e2-c6c3-409f-883c-6e4642a55471</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

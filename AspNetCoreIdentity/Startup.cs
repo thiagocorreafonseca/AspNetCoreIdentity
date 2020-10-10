@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using AspNetCoreIdentity.Config;
+using Microsoft.Extensions.Hosting;
 
 namespace AspNetCoreIdentity
 {
@@ -19,6 +20,10 @@ namespace AspNetCoreIdentity
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true, true)
                 .AddEnvironmentVariables();
 
+            if (env.IsProduction())
+            {
+                builder.AddUserSecrets<Startup>();
+            }
             Configuration = builder.Build();
         }
 
