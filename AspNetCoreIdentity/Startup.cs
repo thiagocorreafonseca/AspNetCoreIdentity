@@ -13,7 +13,7 @@ using KissLog;
 using KissLog.AspNetCore;
 using KissLog.CloudListeners.Auth;
 using KissLog.CloudListeners.RequestLogsListener;
-
+using AspNetCoreIdentity.Extensions;
 
 namespace AspNetCoreIdentity
 {
@@ -42,7 +42,7 @@ namespace AspNetCoreIdentity
             services.AddIdentityConfig(Configuration);
             services.AddAuthorizationConfig();
             services.ResolveDependencies();
-
+            services.AddSession();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<ILogger>((context) =>
             {
@@ -50,7 +50,9 @@ namespace AspNetCoreIdentity
             });
 
             services.AddMvc(options => options.EnableEndpointRouting = false);
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+            services.AddMvc(options =>
+                options.Filters.Add(typeof(AuditoriaFilter))    
+            ).SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -66,11 +68,12 @@ namespace AspNetCoreIdentity
                 app.UseHsts();
             }
 
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
             app.UseAuthentication();
-
+            app.UseSession();
             app.UseKissLogMiddleware(options => {
                 ConfigureKissLog(options);
             });
@@ -81,7 +84,6 @@ namespace AspNetCoreIdentity
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
-            
         }
         
         private void ConfigureKissLog(IOptionsBuilder options)
