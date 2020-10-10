@@ -61,10 +61,35 @@ namespace AspNetCoreIdentity.Controllers
             return View();
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        [Route("erro/{id:length(3,3)}")]
+        public IActionResult Error(int id)
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            var modelErro = new ErrorViewModel();
+
+            if(id == 500)
+            {
+                modelErro.ErrorCode = id;
+                modelErro.Titulo = "Ocorreu um erro!";
+                modelErro.Mensagem = "Tente novamente mais tarde ou entre em contato com o suporte!!";
+            }
+            else if(id == 404)
+            {
+                modelErro.ErrorCode = id;
+                modelErro.Titulo = "Página não encontrada";
+                modelErro.Mensagem = "A Página que está procurando não existe </br> Em caso de dúvidas entre em contato com o suporte!!";
+            }
+            else if (id == 403)
+            {
+                modelErro.ErrorCode = id;
+                modelErro.Titulo = "Acesso Negado";
+                modelErro.Mensagem = "Você não possui permissão para acessar esta página!!";
+            }
+            else
+            {
+                return StatusCode(404);
+            }
+
+            return View("Error", modelErro);
         }
     }
 }

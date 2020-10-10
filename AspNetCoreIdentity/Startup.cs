@@ -38,7 +38,7 @@ namespace AspNetCoreIdentity
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -46,7 +46,8 @@ namespace AspNetCoreIdentity
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/erro/500");
+                app.UseStatusCodePagesWithRedirects("/erro/{0}");
                 app.UseHsts();
             }
 
