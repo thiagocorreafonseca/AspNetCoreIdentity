@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using AspNetCoreIdentity.Models;
 using Microsoft.AspNetCore.Authorization;
+using AspNetCoreIdentity.Extensions;
 
 namespace AspNetCoreIdentity.Controllers
 {
@@ -50,6 +51,11 @@ namespace AspNetCoreIdentity.Controllers
             return View("Secret");
         }
 
+        [ClaimsAuthorize("Produtos", "Ler")]
+        public IActionResult ClaimsCustom()
+        {
+            return View("Secret");
+        }
         public IActionResult Privacy()
         {
             return View();
